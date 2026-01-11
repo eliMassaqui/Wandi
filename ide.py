@@ -8,6 +8,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QAction, QIcon, QFont
 from PyQt6.QtCore import Qt
+from simulation_view import SimulationView
+
 
 
 class WandiIDE(QMainWindow):
@@ -115,14 +117,10 @@ class WandiIDE(QMainWindow):
             QDockWidget.DockWidgetFeature.DockWidgetClosable
         )
 
-        placeholder = QLabel(
-            "Área de Simulação 3D\n(OpenGL / PyBullet / Three.js futuramente)"
-        )
-        placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # 🔹 ÁREA REAL DE SIMULAÇÃO (SEPARADA)
+        self.simulation_view = SimulationView(self)
+        self.simulation_dock.setWidget(self.simulation_view)
 
-        self.simulation_dock.setWidget(placeholder)
-
-        # posição inicial à direita
         self.addDockWidget(
             Qt.DockWidgetArea.RightDockWidgetArea,
             self.simulation_dock
