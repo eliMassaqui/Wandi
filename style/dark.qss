@@ -29,8 +29,8 @@ QMainWindow {
    ========================================================= */
 
 QMenuBar {
-    background-color: #252526;  /* Fundo da barra */
-    color: #ffffff;             /* Cor do texto */
+    background-color: #ffffff;  /* Fundo da barra */
+    color: #000000;             /* Cor do texto */
     border-bottom: 1px solid #333;
 }
 
@@ -42,7 +42,7 @@ QMenuBar::item {
 
 /* Item quando selecionado */
 QMenuBar::item:selected {
-    background-color: #3c3c3c;  /* Destaque ao passar mouse */
+    background-color: #cccccc;  /* Destaque ao passar mouse */
 }
 
 
@@ -209,7 +209,7 @@ QDockWidget {
 QDockWidget::title {
     background-color: #2d2d30;
     color: #ffffff;
-    padding: 6px;
+    padding: 8px;
 }
 
 /* Botões do Dock */
@@ -225,7 +225,7 @@ QDockWidget::float-button {
 
 QTextEdit {
     background-color: #1e1e1e;
-    color: #cccccc;
+    color: #ffffff;
     border: none;
 }
 
