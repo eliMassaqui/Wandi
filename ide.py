@@ -79,7 +79,7 @@ class WandiIDE(QMainWindow):
 
     # ─ CONSOLE (DOCK INFERIOR) ─
     def _create_console_dock(self):
-        dock = QDockWidget("Console", self)
+        dock = QDockWidget("Mensageiro", self)
         dock.setAllowedAreas(Qt.DockWidgetArea.BottomDockWidgetArea)
 
         tabs = QTabWidget()
