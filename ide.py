@@ -1,17 +1,21 @@
 import sys
+import os
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow,
     QMenu, QToolBar, QComboBox, QPushButton,
     QTabWidget, QPlainTextEdit, QTextEdit,
     QDockWidget, QLabel
 )
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
 
 
 class WandiIDE(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        caminho_icone = os.path.join(os.path.dirname(__file__), "wandi.png")
+        self.setWindowIcon(QIcon(caminho_icone))
 
         self.setWindowTitle("Wandi IDE")
         self.resize(1200, 800)
