@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (
     QTabWidget, QPlainTextEdit, QTextEdit,
     QDockWidget, QLabel
 )
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtGui import QAction, QIcon, QFont
 from PyQt6.QtCore import Qt
 
 
@@ -26,7 +26,6 @@ class WandiIDE(QMainWindow):
         self._create_console_dock()
         self._create_simulation_dock()
         self._create_statusbar()
-        self._apply_style()
 
 
         # ⚠️ Ajuste deve vir DEPOIS de tudo criado
@@ -142,113 +141,16 @@ class WandiIDE(QMainWindow):
     def _create_statusbar(self):
         self.statusBar().showMessage("Pronto")
 
-    def _apply_style(self):
-        self.setStyleSheet("""
-            /* ===== GERAL ===== */
-            QMainWindow {
-                background-color: #1e1e1e;
-            }
-
-            /* ===== MENU ===== */
-            QMenuBar {
-                background-color: #252526;
-                color: #ffffff;
-            }
-
-            QMenuBar::item:selected {
-                background-color: #3c3c3c;
-            }
-
-            QMenu {
-                background-color: #252526;
-                color: #ffffff;
-                border: 1px solid #333;
-            }
-
-            QMenu::item:selected {
-                background-color: #007acc;
-            }
-
-            /* ===== TOOLBAR ===== */
-            QToolBar {
-                background-color: #2d2d30;
-                border-bottom: 1px solid #3c3c3c;
-                spacing: 6px;
-            }
-
-            QToolButton {
-                background-color: transparent;
-                color: #ffffff;
-                padding: 6px;
-            }
-
-            QToolButton:hover {
-                background-color: #3c3c3c;
-            }
-
-            /* ===== EDITOR ===== */
-            QPlainTextEdit {
-                background-color: #1e1e1e;
-                color: #d4d4d4;
-                font-family: Consolas, Courier New, monospace;
-                font-size: 13px;
-                selection-background-color: #264f78;
-                border: none;
-            }
-
-            /* ===== TABS ===== */
-            QTabWidget::pane {
-                border-top: 1px solid #3c3c3c;
-            }
-
-            QTabBar::tab {
-                background-color: #2d2d30;
-                color: #cccccc;
-                padding: 6px 12px;
-                border: 1px solid #3c3c3c;
-                border-bottom: none;
-            }
-
-            QTabBar::tab:selected {
-                background-color: #1e1e1e;
-                color: #ffffff;
-            }
-
-            /* ===== DOCK ===== */
-            QDockWidget {
-                titlebar-close-icon: none;
-                titlebar-normal-icon: none;
-            }
-
-            QDockWidget::title {
-                background-color: #2d2d30;
-                color: #ffffff;
-                padding: 6px;
-            }
-
-            /* ===== STATUS BAR ===== */
-            QStatusBar {
-                background-color: #007acc;
-                color: white;
-            }
-
-            /* ===== COMBO / BUTTON ===== */
-            QComboBox, QPushButton {
-                background-color: #3c3c3c;
-                color: white;
-                border: 1px solid #555;
-                padding: 4px;
-            }
-
-            QComboBox:hover, QPushButton:hover {
-                background-color: #505050;
-            }
-        """)
-
-
+# -- TEMA --
+def load_style(app):
+    with open("style/dark.qss", "r", encoding="utf-8") as f:
+        app.setStyleSheet(f.read())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = WandiIDE()
-    window.show()
+    app.setFont(QFont("Consolas", 12))
+
+    load_style(app)
+    window.showMaximized()
     sys.exit(app.exec())
