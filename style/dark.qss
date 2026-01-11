@@ -146,7 +146,7 @@ QComboBox QAbstractItemView {
 
 /* Seta do ComboBox */
 QComboBox::drop-down {
-    border: none;
+   border: none;
 }
 
 
@@ -224,7 +224,7 @@ QDockWidget::float-button {
    ========================================================= */
 
 QTextEdit {
-    background-color: #1e1e1e;
+    background-color: #000000;
     color: #ffffff;
     border: none;
 }
