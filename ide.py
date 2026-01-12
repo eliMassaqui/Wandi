@@ -8,7 +8,10 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import QAction, QIcon, QFont
 from PyQt6.QtCore import Qt
-from simulation_view import SimulationView
+
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtCore import QUrl
+
 
 
 
@@ -118,8 +121,10 @@ class WandiIDE(QMainWindow):
         )
 
         # 🔹 ÁREA REAL DE SIMULAÇÃO (SEPARADA)
-        self.simulation_view = SimulationView(self)
+        self.simulation_view = QWebEngineView()
+        self.simulation_view.load(QUrl("https://wandi3d.vercel.app"))
         self.simulation_dock.setWidget(self.simulation_view)
+
 
         self.addDockWidget(
             Qt.DockWidgetArea.RightDockWidgetArea,

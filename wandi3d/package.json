@@ -1,0 +1,18 @@
+{
+  "name": "wandi3d",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dat": "^14.0.3",
+    "three": "^0.182.0",
+    "vite": "^7.3.1"
+  }
+}
