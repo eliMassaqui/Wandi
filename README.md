@@ -97,3 +97,10 @@ WANDI/
 * Simulação 3D interativa com física realista
 * Sistema de plugins para extensões de IDE
 * Monitoramento em tempo real entre hardware físico e simulação 3D
+
+# Wandi IDE
+
+Aqui está uma captura de tela da interface do Wandi IDE:
+
+![Captura de tela do Wandi IDE](https://github.com/eliMassaqui/Wandi/raw/master/Captura%20de%20ecr%C3%A3%202026-01-12%20171653.png)
+
