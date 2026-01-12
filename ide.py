@@ -71,13 +71,12 @@ class WandiIDE(QMainWindow):
 
         editor = QPlainTextEdit()
         editor.setPlainText(
-            "void setup() {\n"
-            "    // setup\n"
-            "}\n\n"
-            "void loop() {\n"
-            "    // loop\n"
-            "}"
+            "def setup():\n"
+            "    pass\n\n"
+            "def loop():\n"
+            "    pass"
         )
+
 
         self.editor_tabs.addTab(editor, "wandicode.py")
         self.setCentralWidget(self.editor_tabs)
