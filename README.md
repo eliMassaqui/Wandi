@@ -1,4 +1,4 @@
-# Wandi IDE - IDE de Microcontroladores e Simulação 3D Avançada
+# Wandi IDE - IDE de Microcontroladores e Simulação 3D Avançada.
 
 ## 🌟 Visão Geral
 

@@ -121,7 +121,7 @@ class WandiIDE(QMainWindow):
 
         # 🔹 ÁREA REAL DE SIMULAÇÃO (SEPARADA)
         self.simulation_view = QWebEngineView()
-        self.simulation_view.load(QUrl("https://wandi3d.vercel.app"))
+        self.simulation_view.load(QUrl("https://simulation-one.vercel.app/"))
         self.simulation_dock.setWidget(self.simulation_view)
 
 
