@@ -16,56 +16,56 @@ from wandi_lib_manager import WandiLibManager
 
 class WandiIDE(QMainWindow):
     def __init__(self):
-            super().__init__()
+        super().__init__()
 
-            caminho_icone = os.path.join(os.path.dirname(__file__), "wandi.png")
-            self.setWindowIcon(QIcon(caminho_icone))
+        caminho_icone = os.path.join(os.path.dirname(__file__), "wandi.png")
+        self.setWindowIcon(QIcon(caminho_icone))
 
-            self.setWindowTitle("Wandi IDE")
-            self.resize(1200, 800)
+        self.setWindowTitle("Wandi IDE")
+        self.resize(1200, 800)
 
-            self.setCorner(Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
+        self.setCorner(Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
 
-            self._create_menu()
-            self._create_toolbar()
-            self._create_central()
-            self._create_console_dock()
-            self._create_unified_dock()
-            
-            self._create_statusbar()
-            self._adjust_initial_layout()
+        self._create_menu()
+        self._create_toolbar()
+        self._create_central()
+        self._create_console_dock()
+        self._create_unified_dock()
+        
+        self._create_statusbar()
+        self._adjust_initial_layout()
 
-            # --- ESTILO APLICADO NOS DOIS PAINÉIS (PROJETO E MENSAGEIRO) ---
-            
-            # Borda na lateral (Projeto)
-            self.project_dock.setStyleSheet("""
-                QDockWidget > QWidget {
-                    border-left: 1px solid #0078d4; 
-                    background-color: #1e1e1e;
-                }
-                QDockWidget::title {
-                    background-color: #1e1e1e;
-                    border-left: 1px solid #0078d4;
-                    border-bottom: 1px solid #333;
-                    padding-left: 10px;
-                    color: #888;
-                }
-            """)
+        # --- ESTILO: PROJETO (AZUL) E MENSAGEIRO (CINZA) ---
+        
+        # Borda na lateral (Projeto)
+        self.project_dock.setStyleSheet("""
+            QDockWidget > QWidget {
+                border-left: 1px solid #0078d4; 
+                background-color: #1e1e1e;
+            }
+            QDockWidget::title {
+                background-color: #1e1e1e;
+                border-left: 1px solid #0078d4;
+                border-bottom: 1px solid #333;
+                padding-left: 10px;
+                color: #888;
+            }
+        """)
 
-            # Borda no topo (Mensageiro)
-            self.console_dock.setStyleSheet("""
-                QDockWidget > QWidget {
-                    border-top: 1px solid #0078d4; 
-                    background-color: #1e1e1e;
-                }
-                QDockWidget::title {
-                    background-color: #1e1e1e;
-                    border-top: 1px solid #0078d4;
-                    border-bottom: 1px solid #333;
-                    padding-left: 10px;
-                    color: #888;
-                }
-            """)
+        # Borda cinza no topo (Mensageiro) - AGORA FIXO
+        self.console_dock.setStyleSheet("""
+            QDockWidget > QWidget {
+                border-top: 1px solid #555555; 
+                background-color: #1e1e1e;
+            }
+            QDockWidget::title {
+                background-color: #1e1e1e;
+                border-top: 1px solid #555555;
+                border-bottom: 1px solid #333;
+                padding-left: 10px;
+                color: #888;
+            }
+        """)
 
     # ─ MENU BAR ─
     def _create_menu(self):
@@ -95,12 +95,10 @@ class WandiIDE(QMainWindow):
 
         toolbar.addSeparator()
         
-        # Botão 3D
         self.btn_3d = QPushButton("3D")
         self.btn_3d.clicked.connect(lambda: self._switch_view(0, "Simulação 3D"))
         toolbar.addWidget(self.btn_3d)
 
-        # Botão Biblioteca ao lado do 3D
         self.btn_lib = QPushButton("Biblioteca")
         self.btn_lib.clicked.connect(lambda: self._switch_view(1, "Biblioteca"))
         toolbar.addWidget(self.btn_lib)
@@ -113,9 +111,14 @@ class WandiIDE(QMainWindow):
         self.editor_tabs.addTab(editor, "wandicode.py")
         self.setCentralWidget(self.editor_tabs)
 
-    # ─ CONSOLE ─
+    # ─ CONSOLE (MENSAGEIRO) ─
     def _create_console_dock(self):
         self.console_dock = QDockWidget("Mensageiro", self)
+        
+        # AJUSTE: Removido 'Movable' para ele não sair da base (não voar)
+        self.console_dock.setAllowedAreas(Qt.DockWidgetArea.BottomDockWidgetArea)
+        self.console_dock.setFeatures(QDockWidget.DockWidgetFeature.DockWidgetClosable)
+
         tabs = QTabWidget()
         output = QTextEdit()
         output.setReadOnly(True)
@@ -127,29 +130,26 @@ class WandiIDE(QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.console_dock)
         self.console_dock.hide()
 
-    # DENTRO DO SEU MÉTODO _create_unified_dock ORIGINAL:
+    # ─ UNIFIED DOCK ─
     def _create_unified_dock(self):
         self.project_dock = QDockWidget("Simulação 3D", self)
         self.project_stack = QStackedWidget()
         
-        # 0: Simulação
         self.simulation_view = QWebEngineView()
         self.simulation_view.load(QUrl("https://simulation-one.vercel.app/"))
         
-        # 1: BIBLIOTECA (IMPORTANDO SEU BACKEND AQUI)
-        self.library_manager = WandiLibManager() # <--- CHAMANDO O SEU CÓDIGO
+        self.library_manager = WandiLibManager()
 
         self.project_stack.addWidget(self.simulation_view)
-        self.project_stack.addWidget(self.library_manager) # <--- ADICIONANDO ELE
+        self.project_stack.addWidget(self.library_manager)
 
         self.project_dock.setWidget(self.project_stack)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.project_dock)
 
     def _switch_view(self, index, title):
-        """Muda o conteúdo do dock e o seu título direto"""
         self.project_stack.setCurrentIndex(index)
         self.project_dock.setWindowTitle(title)
-        self.project_dock.show() # Garante que apareça se estiver fechado
+        self.project_dock.show()
 
     def _adjust_initial_layout(self):
         largura_projeto = int(self.width() * 0.6)
