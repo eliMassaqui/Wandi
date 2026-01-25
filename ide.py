@@ -12,6 +12,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl
 
+from wandi_lib_manager import WandiLibManager
 
 class WandiIDE(QMainWindow):
     def __init__(self):
@@ -94,7 +95,7 @@ class WandiIDE(QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.console_dock)
         self.console_dock.hide()
 
-    # ─ UNIFIED DOCK (SIMULAÇÃO / BIBLIOTECA) ─
+    # DENTRO DO SEU MÉTODO _create_unified_dock ORIGINAL:
     def _create_unified_dock(self):
         self.project_dock = QDockWidget("Simulação 3D", self)
         self.project_stack = QStackedWidget()
@@ -103,12 +104,11 @@ class WandiIDE(QMainWindow):
         self.simulation_view = QWebEngineView()
         self.simulation_view.load(QUrl("https://simulation-one.vercel.app/"))
         
-        # 1: Biblioteca
-        self.library_list = QListWidget()
-        self.library_list.addItems(["LiquidCrystal", "Servo", "DHT22", "Wire"])
+        # 1: BIBLIOTECA (IMPORTANDO SEU BACKEND AQUI)
+        self.library_manager = WandiLibManager() # <--- CHAMANDO O SEU CÓDIGO
 
         self.project_stack.addWidget(self.simulation_view)
-        self.project_stack.addWidget(self.library_list)
+        self.project_stack.addWidget(self.library_manager) # <--- ADICIONANDO ELE
 
         self.project_dock.setWidget(self.project_stack)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.project_dock)

@@ -26,9 +26,7 @@ class FilterChip(QPushButton):
         self.set_active(False)
 
     def set_active(self, active=False):
-        """Define o estilo visual baseado no estado de seleção"""
         if active:
-            # Estilo Azul (Selecionado)
             self.setStyleSheet("""
                 QPushButton {
                     background-color: #0078d4;
@@ -41,7 +39,6 @@ class FilterChip(QPushButton):
                 }
             """)
         else:
-            # Estilo Original (Inativo)
             self.setStyleSheet("""
                 QPushButton {
                     background-color: #333;
@@ -58,7 +55,7 @@ class FilterChip(QPushButton):
                 }
             """)
 
-# --- CARD SUSPENSO MODERNO (ORIGINAL) ---
+# --- CARD SUSPENSO MODERNO ---
 class InstallDialog(QDialog):
     def __init__(self, lib_data, parent=None):
         super().__init__(parent)
@@ -243,21 +240,19 @@ class LibCard(QFrame):
                 action = ["lib", "install", f"{self.lib_name}@{version}"]
                 self.manager.handle_action(action)
 
-# --- GERENCIADOR PRINCIPAL ---
+# --- GERENCIADOR PRINCIPAL (WIDGET DE EXPORTAÇÃO) ---
 class WandiLibManager(QWidget):
     def __init__(self):
         super().__init__()
         self.pending_libs = []
-        self.all_chips = [] # Para gerenciar estados visuais
+        self.all_chips = []
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("Wandi Studio - Library Manager")
-        self.setMinimumSize(540, 700)
         self.setStyleSheet("""
             QWidget { background-color: #1e1e1e; color: #ffffff; font-family: 'Segoe UI', sans-serif; }
-            QLineEdit { background-color: #2d2d2d; border: 1px solid #333; padding: 8px; border-radius: 4px; }
-            QPushButton#MainBtn { background-color: #333; padding: 8px 15px; border-radius: 4px; font-weight: bold; }
+            QLineEdit { background-color: #2d2d2d; border: 1px solid #333; padding: 8px; border-radius: 4px; color: white; }
+            QPushButton#MainBtn { background-color: #333; padding: 8px 15px; border-radius: 4px; font-weight: bold; color: white; border: none; }
             QPushButton#MainBtn:hover { background-color: #444; }
         """)
 
@@ -276,7 +271,6 @@ class WandiLibManager(QWidget):
         search_input_row.addWidget(self.btn_s)
         search_area.addLayout(search_input_row)
 
-        # Chips de Filtro
         chips_layout = QHBoxLayout()
         chips_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         filtros = ["Stepper", "Liquid", "Servo", "Sensor", "Display"]
@@ -313,7 +307,6 @@ class WandiLibManager(QWidget):
         self.load_installed()
 
     def update_chip_styles(self, current_term):
-        """Reseta todos os chips e ativa apenas o que coincide com a busca"""
         for chip in self.all_chips:
             chip.set_active(chip.text().lower() == current_term.lower())
 
@@ -324,7 +317,7 @@ class WandiLibManager(QWidget):
     def do_search(self):
         txt = self.input.text().strip()
         if txt:
-            self.update_chip_styles(txt) # Atualiza a cor azul do chip
+            self.update_chip_styles(txt)
             self.btn_more.hide()
             self.update_status(f"🔍 Pesquisando: {txt}...")
             self.worker = ArduinoWorker(["lib", "search", txt])
@@ -332,7 +325,7 @@ class WandiLibManager(QWidget):
             self.worker.start()
 
     def load_installed(self):
-        self.update_chip_styles("") # Remove destaque de chips ao listar tudo
+        self.update_chip_styles("")
         self.btn_more.hide()
         self.update_status("📂 Carregando instaladas...")
         self.worker = ArduinoWorker(["lib", "list"])
@@ -372,6 +365,7 @@ class WandiLibManager(QWidget):
         self.worker.finished.connect(lambda d: self.load_installed())
         self.worker.start()
 
+# --- EXECUÇÃO SOLO APENAS PARA TESTES ---
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = WandiLibManager()
