@@ -7,12 +7,11 @@ from PyQt6.QtWidgets import (
     QDockWidget, QListWidget, QStackedWidget
 )
 from PyQt6.QtGui import QAction, QIcon, QFont
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QUrl, QSize
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtCore import QUrl
 
 from wandi_lib_manager import WandiLibManager
-from wandi_menu import WandiMenu  # Importação do novo backend
+from wandi_menu import WandiMenu
 
 class WandiIDE(QMainWindow):
     def __init__(self):
@@ -33,8 +32,10 @@ class WandiIDE(QMainWindow):
         
         self._create_statusbar()
         self._adjust_initial_layout()
+        self._apply_custom_styles()
 
-        # Estilos originais (Azul e Cinza)
+    def _apply_custom_styles(self):
+        # Mantendo sua lógica original de estilos dos Docks
         self.project_dock.setStyleSheet("""
             QDockWidget > QWidget { border-left: 1px solid #0078d4; background-color: #1e1e1e; }
             QDockWidget::title { background-color: #1e1e1e; border-left: 1px solid #0078d4; border-bottom: 1px solid #333; padding-left: 10px; color: #888; }
@@ -45,26 +46,73 @@ class WandiIDE(QMainWindow):
             QDockWidget::title { background-color: #1e1e1e; border-top: 1px solid #555555; border-bottom: 1px solid #333; padding-left: 10px; color: #888; }
         """)
 
+        # Estilo para os botões da Toolbar ocuparem o máximo de espaço
+        toolbar_style = """
+            QToolBar { background: #252526; border-bottom: 2px solid #333; spacing: 15px; padding: 8px; }
+            
+            /* Estilo para as QActions e QPushButtons */
+            QToolButton, QPushButton {
+                background-color: transparent;
+                border: 2px solid #333;
+                border-radius: 6px;
+                padding: 2px; /* Mínimo padding para o ícone 35x35 caber no botão 38x38 */
+            }
+            
+            QToolButton:hover, QPushButton:hover {
+                background-color: #3e3e3e;
+                border: 2px solid #0078d4;
+            }
+        """
+        self.setStyleSheet(self.styleSheet() + toolbar_style)
+
     def _create_menu(self):
-        # Lógica original substituída pela instância do backend externo
         self.menu_manager = WandiMenu(self)
 
     def _create_toolbar(self):
         toolbar = QToolBar("Main Toolbar")
         toolbar.setMovable(False)
+        # Padronizando o tamanho do ícone para as QActions (Compilar/Enviar)
+        toolbar.setIconSize(QSize(35, 35)) 
         self.addToolBar(toolbar)
-        toolbar.addAction(QAction("Compilar", self))
-        toolbar.addAction(QAction("Enviar", self))
+
+        icons_path = os.path.join(os.path.dirname(__file__), "icons")
+
+        # --- Compilar ---
+        self.action_compilar = QAction(QIcon(os.path.join(icons_path, "compilar.png")), "Compilar", self)
+        toolbar.addAction(self.action_compilar)
+
+        # --- Enviar ---
+        self.action_enviar = QAction(QIcon(os.path.join(icons_path, "enviar.png")), "Enviar", self)
+        toolbar.addAction(self.action_enviar)
+
         toolbar.addSeparator()
-        board = QComboBox(); board.addItems(["Arduino Uno", "Arduino Mega", "ESP32"])
+
+        # Seletores (Mantendo lógica original)
+        board = QComboBox()
+        board.addItems(["Arduino Uno", "Arduino Mega", "ESP32"])
         toolbar.addWidget(board)
-        port = QComboBox(); port.addItems(["COM3", "COM4", "/dev/ttyUSB0"])
+
+        port = QComboBox()
+        port.addItems(["COM3", "COM4", "/dev/ttyUSB0"])
         toolbar.addWidget(port)
+
         toolbar.addSeparator()
-        self.btn_3d = QPushButton("3D")
+
+        # --- Botão 3D ---
+        self.btn_3d = QPushButton()
+        self.btn_3d.setIcon(QIcon(os.path.join(icons_path, "3d.png")))
+        self.btn_3d.setIconSize(QSize(35, 35))
+        self.btn_3d.setFixedSize(38, 38)
+        self.btn_3d.setToolTip("Simulação 3D")
         self.btn_3d.clicked.connect(lambda: self._switch_view(0, "Simulação 3D"))
         toolbar.addWidget(self.btn_3d)
-        self.btn_lib = QPushButton("Biblioteca")
+
+        # --- Botão Biblioteca ---
+        self.btn_lib = QPushButton()
+        self.btn_lib.setIcon(QIcon(os.path.join(icons_path, "biblioteca.png")))
+        self.btn_lib.setIconSize(QSize(35, 35))
+        self.btn_lib.setFixedSize(38, 38)
+        self.btn_lib.setToolTip("Biblioteca")
         self.btn_lib.clicked.connect(lambda: self._switch_view(1, "Biblioteca"))
         toolbar.addWidget(self.btn_lib)
 
