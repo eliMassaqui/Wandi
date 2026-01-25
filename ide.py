@@ -16,44 +16,56 @@ from wandi_lib_manager import WandiLibManager
 
 class WandiIDE(QMainWindow):
     def __init__(self):
-        super().__init__()
+            super().__init__()
 
-        caminho_icone = os.path.join(os.path.dirname(__file__), "wandi.png")
-        self.setWindowIcon(QIcon(caminho_icone))
+            caminho_icone = os.path.join(os.path.dirname(__file__), "wandi.png")
+            self.setWindowIcon(QIcon(caminho_icone))
 
-        self.setWindowTitle("Wandi IDE")
-        self.resize(1200, 800)
+            self.setWindowTitle("Wandi IDE")
+            self.resize(1200, 800)
 
-        self.setCorner(Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
+            self.setCorner(Qt.Corner.BottomRightCorner, Qt.DockWidgetArea.RightDockWidgetArea)
 
-        self._create_menu()
-        self._create_toolbar()
-        self._create_central()
-        self._create_console_dock()
-        self._create_unified_dock()
-        
-        self._create_statusbar()
-        self._adjust_initial_layout()
+            self._create_menu()
+            self._create_toolbar()
+            self._create_central()
+            self._create_console_dock()
+            self._create_unified_dock()
+            
+            self._create_statusbar()
+            self._adjust_initial_layout()
 
-        # --- ESTILO ADICIONADO: BORDA AZUL BRILHANTE ---
-        # Mantém seu código intacto e apenas "pinta" a borda do Dock
-        self.project_dock.setStyleSheet("""
-            QDockWidget {
-                border: none;
-            }
-            /* Esta é a borda azul brilhante que separa do editor */
-            QDockWidget > QWidget {
-                border-left: 1px solid #0078d4; 
-                background-color: #1e1e1e;
-            }
-            QDockWidget::title {
-                background-color: #1e1e1e;
-                border-left: 1px solid #0078d4;
-                border-bottom: 1px solid #333;
-                padding-left: 10px;
-                color: #888;
-            }
-        """)
+            # --- ESTILO APLICADO NOS DOIS PAINÉIS (PROJETO E MENSAGEIRO) ---
+            
+            # Borda na lateral (Projeto)
+            self.project_dock.setStyleSheet("""
+                QDockWidget > QWidget {
+                    border-left: 1px solid #0078d4; 
+                    background-color: #1e1e1e;
+                }
+                QDockWidget::title {
+                    background-color: #1e1e1e;
+                    border-left: 1px solid #0078d4;
+                    border-bottom: 1px solid #333;
+                    padding-left: 10px;
+                    color: #888;
+                }
+            """)
+
+            # Borda no topo (Mensageiro)
+            self.console_dock.setStyleSheet("""
+                QDockWidget > QWidget {
+                    border-top: 1px solid #0078d4; 
+                    background-color: #1e1e1e;
+                }
+                QDockWidget::title {
+                    background-color: #1e1e1e;
+                    border-top: 1px solid #0078d4;
+                    border-bottom: 1px solid #333;
+                    padding-left: 10px;
+                    color: #888;
+                }
+            """)
 
     # ─ MENU BAR ─
     def _create_menu(self):
