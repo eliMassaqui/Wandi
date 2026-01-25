@@ -35,6 +35,26 @@ class WandiIDE(QMainWindow):
         self._create_statusbar()
         self._adjust_initial_layout()
 
+        # --- ESTILO ADICIONADO: BORDA AZUL BRILHANTE ---
+        # Mantém seu código intacto e apenas "pinta" a borda do Dock
+        self.project_dock.setStyleSheet("""
+            QDockWidget {
+                border: none;
+            }
+            /* Esta é a borda azul brilhante que separa do editor */
+            QDockWidget > QWidget {
+                border-left: 1px solid #0078d4; 
+                background-color: #1e1e1e;
+            }
+            QDockWidget::title {
+                background-color: #1e1e1e;
+                border-left: 1px solid #0078d4;
+                border-bottom: 1px solid #333;
+                padding-left: 10px;
+                color: #888;
+            }
+        """)
+
     # ─ MENU BAR ─
     def _create_menu(self):
         menu = self.menuBar()
