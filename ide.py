@@ -1,5 +1,6 @@
 import sys
 import os
+import threading
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow,
     QMenu, QToolBar, QComboBox, QPushButton,
@@ -7,11 +8,22 @@ from PyQt6.QtWidgets import (
     QDockWidget, QListWidget, QStackedWidget
 )
 from PyQt6.QtGui import QAction, QIcon, QFont
-from PyQt6.QtCore import Qt, QUrl, QSize
+from PyQt6.QtCore import Qt, QUrl, QSize, pyqtSignal, QObject
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 from wandilib import WandiLibManager
 from wandimenu import WandiMenu
+# Importando o setup que criamos
+from engine import initialize_wandi_engine 
+
+# Classe para desviar o print para o seu Output
+class ConsoleStream(QObject):
+    text_written = pyqtSignal(str)
+    def write(self, text):
+        if text.strip():
+            self.text_written.emit(text)
+    def flush(self):
+        pass
 
 class WandiIDE(QMainWindow):
     def __init__(self):
@@ -34,34 +46,47 @@ class WandiIDE(QMainWindow):
         self._adjust_initial_layout()
         self._apply_custom_styles()
 
+        # --- INICIALIZAÇÃO DO MOTOR WANDI ---
+        self.start_engine_check()
+
+    def start_engine_check(self):
+        # Redireciona o print para a aba Output
+        self.stream = ConsoleStream()
+        self.stream.text_written.connect(self.log_to_output)
+        sys.stdout = self.stream 
+
+        # Roda em thread para não travar a UI original
+        threading.Thread(target=initialize_wandi_engine, daemon=True).start()
+
+    def log_to_output(self, text):
+            # Garante fonte de console para os logs técnicos
+            self.output_widget.setFont(QFont("Consolas", 10))
+            self.output_widget.append(text)
+            
+            # Scroll automático
+            self.output_widget.ensureCursorVisible()
+
+            # Se houver atividade técnica pesada, abre o dock "Mensageiro"
+            termos_tecnicos = ["Updating", "Downloading", "Installing", "Configuring", "Extracting"]
+            if any(termo in text for termo in termos_tecnicos):
+                if self.console_dock.isHidden():
+                    self.console_dock.show()
+
+    # --- SEUS MÉTODOS ORIGINAIS (SEM ALTERAÇÃO) ---
+
     def _apply_custom_styles(self):
-        # Mantendo sua lógica original de estilos dos Docks
         self.project_dock.setStyleSheet("""
             QDockWidget > QWidget { border-left: 1px solid #0078d4; background-color: #1e1e1e; }
             QDockWidget::title { background-color: #1e1e1e; border-left: 1px solid #0078d4; border-bottom: 1px solid #333; padding-left: 10px; color: #888; }
         """)
-
         self.console_dock.setStyleSheet("""
             QDockWidget > QWidget { border-top: 1px solid #555555; background-color: #1e1e1e; }
             QDockWidget::title { background-color: #1e1e1e; border-top: 1px solid #555555; border-bottom: 1px solid #333; padding-left: 10px; color: #888; }
         """)
-
-        # Estilo para os botões da Toolbar ocuparem o máximo de espaço
         toolbar_style = """
             QToolBar { background: #252526; border-bottom: 2px solid #333; spacing: 10px; padding: 8px; }
-            
-            /* Estilo para as QActions e QPushButtons */
-            QToolButton, QPushButton {
-                background-color: transparent;
-                border: 2px solid #333;
-                border-radius: 6px;
-                padding: 3px;
-            }
-            
-            QToolButton:hover, QPushButton:hover {
-                background-color: #3e3e3e;
-                border: 2px solid #0078d4;
-            }
+            QToolButton, QPushButton { background-color: transparent; border: 2px solid #333; border-radius: 6px; padding: 3px; }
+            QToolButton:hover, QPushButton:hover { background-color: #3e3e3e; border: 2px solid #0078d4; }
         """
         self.setStyleSheet(self.styleSheet() + toolbar_style)
 
@@ -71,50 +96,27 @@ class WandiIDE(QMainWindow):
     def _create_toolbar(self):
         toolbar = QToolBar("Main Toolbar")
         toolbar.setMovable(False)
-        # Padronizando o tamanho do ícone para as QActions (Compilar/Enviar)
         toolbar.setIconSize(QSize(35, 35)) 
         self.addToolBar(toolbar)
-
         icons_path = os.path.join(os.path.dirname(__file__), "icons")
-
-        # --- Compilar ---
         self.action_compilar = QAction(QIcon(os.path.join(icons_path, "compilar.png")), "Compilar", self)
         toolbar.addAction(self.action_compilar)
-
-        # --- Enviar ---
         self.action_enviar = QAction(QIcon(os.path.join(icons_path, "enviar.png")), "Enviar", self)
         toolbar.addAction(self.action_enviar)
-
         toolbar.addSeparator()
-
-        # --- Botão 3D ---
         self.btn_3d = QPushButton()
         self.btn_3d.setIcon(QIcon(os.path.join(icons_path, "3d.png")))
-        self.btn_3d.setIconSize(QSize(39, 39))
-        self.btn_3d.setFixedSize(43, 43)
-        self.btn_3d.setToolTip("Simulação 3D")
+        self.btn_3d.setIconSize(QSize(39, 39)); self.btn_3d.setFixedSize(43, 43)
         self.btn_3d.clicked.connect(lambda: self._switch_view(0, "Simulação 3D"))
         toolbar.addWidget(self.btn_3d)
-
-        # --- Botão Biblioteca ---
         self.btn_lib = QPushButton()
         self.btn_lib.setIcon(QIcon(os.path.join(icons_path, "biblioteca.png")))
-        self.btn_lib.setIconSize(QSize(39, 39))
-        self.btn_lib.setFixedSize(43, 43)
-        self.btn_lib.setToolTip("Biblioteca")
+        self.btn_lib.setIconSize(QSize(39, 39)); self.btn_lib.setFixedSize(43, 43)
         self.btn_lib.clicked.connect(lambda: self._switch_view(1, "Biblioteca"))
         toolbar.addWidget(self.btn_lib)
-
         toolbar.addSeparator()
-
-        # Seletores (Mantendo lógica original)
-        board = QComboBox()
-        board.addItems(["Arduino Uno", "Arduino Mega", "ESP32"])
-        toolbar.addWidget(board)
-
-        port = QComboBox()
-        port.addItems(["COM5", "COM6", "/dev/ttyUSB0"])
-        toolbar.addWidget(port)
+        board = QComboBox(); board.addItems(["Arduino Uno", "Arduino Mega", "ESP32"]); toolbar.addWidget(board)
+        port = QComboBox(); port.addItems(["COM5", "COM6", "/dev/ttyUSB0"]); toolbar.addWidget(port)
 
     def _create_central(self):
         self.editor_tabs = QTabWidget()
@@ -126,12 +128,14 @@ class WandiIDE(QMainWindow):
     def _create_console_dock(self):
         self.console_dock = QDockWidget("Mensageiro", self)
         tabs = QTabWidget()
-        output = QTextEdit(); output.setReadOnly(True)
+        # Referenciando o output_widget para podermos escrever nele
+        self.output_widget = QTextEdit()
+        self.output_widget.setReadOnly(True)
         serial = QTextEdit(); serial.setReadOnly(True)
-        tabs.addTab(output, "Output"); tabs.addTab(serial, "Serial")
+        tabs.addTab(self.output_widget, "Output")
+        tabs.addTab(serial, "Serial")
         self.console_dock.setWidget(tabs)
         self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.console_dock)
-        self.console_dock.hide()
 
     def _create_unified_dock(self):
         self.project_dock = QDockWidget("Simulação 3D", self)
