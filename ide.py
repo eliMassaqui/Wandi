@@ -10,8 +10,8 @@ from PyQt6.QtGui import QAction, QIcon, QFont
 from PyQt6.QtCore import Qt, QUrl, QSize
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
-from wandi_lib_manager import WandiLibManager
-from wandi_menu import WandiMenu
+from wandilib import WandiLibManager
+from wandimenu import WandiMenu
 
 class WandiIDE(QMainWindow):
     def __init__(self):
@@ -48,14 +48,14 @@ class WandiIDE(QMainWindow):
 
         # Estilo para os botões da Toolbar ocuparem o máximo de espaço
         toolbar_style = """
-            QToolBar { background: #252526; border-bottom: 2px solid #333; spacing: 15px; padding: 8px; }
+            QToolBar { background: #252526; border-bottom: 2px solid #333; spacing: 10px; padding: 8px; }
             
             /* Estilo para as QActions e QPushButtons */
             QToolButton, QPushButton {
                 background-color: transparent;
                 border: 2px solid #333;
                 border-radius: 6px;
-                padding: 2px; /* Mínimo padding para o ícone 35x35 caber no botão 38x38 */
+                padding: 3px;
             }
             
             QToolButton:hover, QPushButton:hover {
@@ -87,22 +87,11 @@ class WandiIDE(QMainWindow):
 
         toolbar.addSeparator()
 
-        # Seletores (Mantendo lógica original)
-        board = QComboBox()
-        board.addItems(["Arduino Uno", "Arduino Mega", "ESP32"])
-        toolbar.addWidget(board)
-
-        port = QComboBox()
-        port.addItems(["COM3", "COM4", "/dev/ttyUSB0"])
-        toolbar.addWidget(port)
-
-        toolbar.addSeparator()
-
         # --- Botão 3D ---
         self.btn_3d = QPushButton()
         self.btn_3d.setIcon(QIcon(os.path.join(icons_path, "3d.png")))
-        self.btn_3d.setIconSize(QSize(35, 35))
-        self.btn_3d.setFixedSize(38, 38)
+        self.btn_3d.setIconSize(QSize(39, 39))
+        self.btn_3d.setFixedSize(43, 43)
         self.btn_3d.setToolTip("Simulação 3D")
         self.btn_3d.clicked.connect(lambda: self._switch_view(0, "Simulação 3D"))
         toolbar.addWidget(self.btn_3d)
@@ -110,11 +99,22 @@ class WandiIDE(QMainWindow):
         # --- Botão Biblioteca ---
         self.btn_lib = QPushButton()
         self.btn_lib.setIcon(QIcon(os.path.join(icons_path, "biblioteca.png")))
-        self.btn_lib.setIconSize(QSize(35, 35))
-        self.btn_lib.setFixedSize(38, 38)
+        self.btn_lib.setIconSize(QSize(39, 39))
+        self.btn_lib.setFixedSize(43, 43)
         self.btn_lib.setToolTip("Biblioteca")
         self.btn_lib.clicked.connect(lambda: self._switch_view(1, "Biblioteca"))
         toolbar.addWidget(self.btn_lib)
+
+        toolbar.addSeparator()
+
+        # Seletores (Mantendo lógica original)
+        board = QComboBox()
+        board.addItems(["Arduino Uno", "Arduino Mega", "ESP32"])
+        toolbar.addWidget(board)
+
+        port = QComboBox()
+        port.addItems(["COM5", "COM6", "/dev/ttyUSB0"])
+        toolbar.addWidget(port)
 
     def _create_central(self):
         self.editor_tabs = QTabWidget()
@@ -125,8 +125,6 @@ class WandiIDE(QMainWindow):
 
     def _create_console_dock(self):
         self.console_dock = QDockWidget("Mensageiro", self)
-        self.console_dock.setAllowedAreas(Qt.DockWidgetArea.BottomDockWidgetArea)
-        self.console_dock.setFeatures(QDockWidget.DockWidgetFeature.DockWidgetClosable)
         tabs = QTabWidget()
         output = QTextEdit(); output.setReadOnly(True)
         serial = QTextEdit(); serial.setReadOnly(True)
@@ -168,7 +166,7 @@ def load_style(app):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = WandiIDE()
-    app.setFont(QFont("Consolas", 12))
+    app.setFont(QFont("Consolas", 13))
     load_style(app)
     window.showMaximized()
     sys.exit(app.exec())
