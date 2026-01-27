@@ -147,6 +147,7 @@ class WandiIDE(QMainWindow):
         self.project_stack.addWidget(self.library_manager)
         self.project_dock.setWidget(self.project_stack)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.project_dock)
+        self.project_dock.hide()
 
     def _switch_view(self, index, title):
         self.project_stack.setCurrentIndex(index)
