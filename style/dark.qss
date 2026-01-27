@@ -178,7 +178,7 @@ QTabWidget::pane {
 
 /* Aba normal */
 QTabBar::tab {
-    background-color: #2d2d30;
+    background-color: #1e1e1e;
     color: #cccccc;
     padding: 6px 16px;
     border: 1px solid #3c3c3c;
@@ -187,7 +187,7 @@ QTabBar::tab {
 
 /* Aba ativa */
 QTabBar::tab:selected {
-    background-color: #1e1e1e;
+    background-color: #2d2d2d;
     color: #ffffff;
 }
 
